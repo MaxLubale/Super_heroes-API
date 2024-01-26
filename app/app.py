@@ -35,8 +35,8 @@ def get_hero(hero_id):
             "name": hero.name,
             "super_name": hero.super_name,
             "powers": [
-                {"id": power.id, "name": power.name, "description": power.description}
-                for power in hero.powers
+                {"id": hero_power.power.id, "name": hero_power.power.name, "description": hero_power.power.description}
+                for hero_power in hero.hero_powers
             ],
         }
         return jsonify(result)
