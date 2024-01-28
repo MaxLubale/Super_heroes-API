@@ -1,34 +1,64 @@
-from app import app, db
-from models import Hero, Power, HeroPower
+from app import  app
+from models import Power, Hero, HeroPower, db
+import random
 
-# Flask app context
 with app.app_context():
-    # Drop existing tables (if any) and create new ones
-    db.drop_all()
-    db.create_all()
+    Hero.query.delete()
+    Power.query.delete()
+    HeroPower.query.delete()
 
-    # Seed Heroes
-    hero1 = Hero(name="Kamala Khan", super_name="Ms. Marvel")
-    hero2 = Hero(name="Doreen Green", super_name="Squirrel Girl")
-    hero3 = Hero(name="Gwen Stacy", super_name="Spider-Gwen")
+    print("🦸‍♀️ Seeding powers...")
 
-    db.session.add_all([hero1, hero2, hero3])
+    powers_data = [
+        {"name": "super strength", "description": "gives the wielder super-human strengths"},
+        {"name": "flight", "description": "gives the wielder the ability to fly through the skies at supersonic speed"},
+        {"name": "super human senses", "description": "allows the wielder to use her senses at a super-human level"},
+        {"name": "elasticity", "description": "can stretch the human body to extreme lengths"}
+    ]
+
+    for data in powers_data:
+        power = Power(**data)
+        db.session.add(power)
+
     db.session.commit()
 
-    # Seed Powers
-    power1 = Power(name="Super Strength", description="Gives the wielder super-human strengths")
-    power2 = Power(name="Flight", description="Gives the wielder the ability to fly through the skies at supersonic speed")
+    print("🦸‍♀️ Seeding heroes...")
 
-    db.session.add_all([power1, power2])
+    heroes_data = [
+        {"name": "Kamala Khan", "super_name": "Ms. Marvel"},
+        {"name": "Doreen Green", "super_name": "Squirrel Girl"},
+        {"name": "Gwen Stacy", "super_name": "Spider-Gwen"},
+        {"name": "Janet Van Dyne", "super_name": "The Wasp"},
+        {"name": "Wanda Maximoff", "super_name": "Scarlet Witch"},
+        {"name": "Carol Danvers", "super_name": "Captain Marvel"},
+        {"name": "Jean Grey", "super_name": "Dark Phoenix"},
+        {"name": "Ororo Munroe", "super_name": "Storm"},
+        {"name": "Kitty Pryde", "super_name": "Shadowcat"},
+        {"name": "Elektra Natchios", "super_name": "Elektra"}
+    ]
+
+    for data in heroes_data:
+        hero = Hero(**data)
+        db.session.add(hero)
+
     db.session.commit()
 
-    # Seed HeroPowers
-    heropower1 = HeroPower(strength="Strong", hero=hero1, power=power1)
-    heropower2 = HeroPower(strength="Average", hero=hero1, power=power2)
-    heropower3 = HeroPower(strength="Weak", hero=hero2, power=power1)
-    heropower4 = HeroPower(strength="Strong", hero=hero3, power=power2)
+    print("🦸‍♀️ Adding powers to heroes...")
 
-    db.session.add_all([heropower1, heropower2, heropower3, heropower4])
+    strengths = ["Strong", "Weak", "Average"]
+
+    heroes = Hero.query.all()
+    powers = Power.query.all()
+
+    for hero in heroes:
+        for _ in range(random.randint(1, 3)):
+            power = random.choice(powers)
+            strength = random.choice(strengths)
+
+            hero_power = HeroPower(hero_id=hero.id, power_id=power.id, strength=strength)
+            db.session.add(hero_power)
+            print(hero_power)
+
     db.session.commit()
 
-    print("Database seeded successfully!")
+    print("🦸‍♀️ Done seeding!")
