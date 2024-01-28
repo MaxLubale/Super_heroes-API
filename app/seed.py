@@ -1,4 +1,5 @@
-from app import app, db, Hero, Power, HeroPower
+from app import app, db
+from models import Hero, Power, HeroPower
 
 # Flask app context
 with app.app_context():
